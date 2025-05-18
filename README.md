@@ -20,6 +20,16 @@ This project implements real-time face detection and recognition using OpenCV. I
    pip install -r requirements.txt
    ```
 
+3. Download the required model file:
+   - Create a `models` directory in the project root:
+     ```bash
+     mkdir models
+     ```
+   - Download the face landmark predictor model:
+     - Visit [dlib's official website](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
+     - Extract the downloaded file
+     - Place `shape_predictor_68_face_landmarks.dat` in the `models` directory
+
 ## Usage
 
 1. Add known faces to the database:
@@ -57,6 +67,7 @@ For best recognition results, follow these guidelines when adding faces:
   - Face images are saved with timestamps (e.g., `face_20240321_123456.jpg`)
 - `known_faces.pkl`: Database file containing face data and names
 - `models/`: Directory containing face detection models
+  - `shape_predictor_68_face_landmarks.dat`: Face landmark predictor model (download separately)
 
 ## Requirements
 

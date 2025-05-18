@@ -43,4 +43,11 @@ known_faces.pkl
 *.pdf
 *.docx
 *.doc
-Papers and Articles/ 
+Papers and Articles/
+
+# Large model files
+models/shape_predictor_68_face_landmarks.dat
+models/*.dat
+models/*.h5
+models/*.pkl
+models/*.bin 
