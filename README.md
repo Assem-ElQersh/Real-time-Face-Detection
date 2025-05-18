@@ -4,7 +4,7 @@
 This project implements real-time face detection and recognition using OpenCV. It can detect faces in video streams and recognize known faces using template matching. The system is designed to be user-friendly, efficient, and easily extensible.
 
 ## Demo
-![Demo GIF](demo.gif)  
+![Demo JPG](demo.jpg)  
 *Demo showing real-time face detection and recognition in action.*
 
 ## Features
