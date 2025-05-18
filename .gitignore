@@ -37,4 +37,10 @@ known_faces.pkl
 *.jpeg
 *.png
 *.mp4
-*.avi 
+*.avi
+
+# Documents
+*.pdf
+*.docx
+*.doc
+Papers and Articles/ 
