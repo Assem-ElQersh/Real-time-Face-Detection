@@ -92,11 +92,6 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
 
-## Credits
-- OpenCV for face detection
-- dlib for face landmark prediction
-- Contributors and users of this project
-
 ## FAQ
 1. **Q: Why is the face recognition accuracy low?**  
    A: Ensure good lighting, clear images, and follow the image guidelines. Add more faces of the same person from different angles.
