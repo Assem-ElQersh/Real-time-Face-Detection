@@ -48,13 +48,17 @@ def extract_bz2(filename):
         return False
 
 def main():
+    # Get the project root directory (two levels up from this file)
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    
     # Create models directory if it doesn't exist
-    if not os.path.exists('models'):
-        os.makedirs('models')
+    models_dir = os.path.join(project_root, 'models')
+    if not os.path.exists(models_dir):
+        os.makedirs(models_dir)
     
     # Download face detection model
     model_url = "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
-    model_path = os.path.join('models', 'shape_predictor_68_face_landmarks.dat.bz2')
+    model_path = os.path.join(models_dir, 'shape_predictor_68_face_landmarks.dat.bz2')
     
     # Alternative download URL (mirror)
     mirror_url = "https://github.com/davisking/dlib-models/raw/master/shape_predictor_68_face_landmarks.dat.bz2"

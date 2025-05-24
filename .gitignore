@@ -45,9 +45,9 @@ known_faces.pkl
 *.doc
 Papers and Articles/
 
-# Large model files
-models/shape_predictor_68_face_landmarks.dat
-models/*.dat
-models/*.h5
-models/*.pkl
-models/*.bin 
+# Large model files (only in shared models directory at project root)
+/models/
+/models/*.dat
+/models/*.h5
+/models/*.pkl
+/models/*.bin 

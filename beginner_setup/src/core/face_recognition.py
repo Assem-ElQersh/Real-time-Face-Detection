@@ -3,18 +3,25 @@ import numpy as np
 import os
 import pickle
 from datetime import datetime
+import sys
+import dlib
+
+# Add the project root directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 class FaceRecognitionSystem:
     def __init__(self):
         self.known_faces = []
         self.known_names = []
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.predictor = dlib.shape_predictor(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'models', 'shape_predictor_68_face_landmarks.dat'))
         self.load_known_faces()
 
     def load_known_faces(self):
         """Load known faces from the database"""
-        if os.path.exists('known_faces.pkl'):
-            with open('known_faces.pkl', 'rb') as f:
+        db_path = os.path.join('src', 'data', 'known_faces.pkl')
+        if os.path.exists(db_path):
+            with open(db_path, 'rb') as f:
                 data = pickle.load(f)
                 self.known_faces = data['faces']
                 self.known_names = data['names']
@@ -73,11 +80,21 @@ class FaceRecognitionSystem:
 
     def run(self):
         """Run the face recognition system"""
-        # Initialize video capture
-        video_capture = cv2.VideoCapture(1)
+        # Try different camera indices
+        for camera_index in [0, 1]:
+            video_capture = cv2.VideoCapture(camera_index)
+            if video_capture.isOpened():
+                print(f"Successfully opened camera {camera_index}")
+                break
+            else:
+                print(f"Failed to open camera {camera_index}")
         
         if not video_capture.isOpened():
-            print("Error: Could not open video capture device")
+            print("Error: Could not open any video capture device")
+            print("Please check if:")
+            print("1. Your camera is properly connected")
+            print("2. No other application is using the camera")
+            print("3. You have necessary permissions to access the camera")
             return
         
         print("Face recognition system started. Press 'q' to quit, 's' to save frame, 'a' to add face")
@@ -156,7 +173,8 @@ class FaceRecognitionSystem:
                 'faces': self.known_faces,
                 'names': self.known_names
             }
-            with open('known_faces.pkl', 'wb') as f:
+            db_path = os.path.join('src', 'data', 'known_faces.pkl')
+            with open(db_path, 'wb') as f:
                 pickle.dump(data, f)
             
             return True

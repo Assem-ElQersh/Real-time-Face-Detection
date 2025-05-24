@@ -3,7 +3,11 @@ import numpy as np
 import argparse
 import pickle
 import os
+import sys
 from datetime import datetime
+
+# Add the project root directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 def load_face_cascade():
     """Load the face detection cascade classifier"""
@@ -118,8 +122,9 @@ def add_face_from_image(image_path, name):
         # Load existing database if it exists
         known_faces = []
         known_names = []
-        if os.path.exists('known_faces.pkl'):
-            with open('known_faces.pkl', 'rb') as f:
+        db_path = os.path.join('src', 'data', 'known_faces.pkl')
+        if os.path.exists(db_path):
+            with open(db_path, 'rb') as f:
                 data = pickle.load(f)
                 known_faces = data['faces']
                 known_names = data['names']
@@ -133,7 +138,7 @@ def add_face_from_image(image_path, name):
             'faces': known_faces,
             'names': known_names
         }
-        with open('known_faces.pkl', 'wb') as f:
+        with open(db_path, 'wb') as f:
             pickle.dump(data, f)
         
         print(f"Successfully added face: {name}")
@@ -177,8 +182,8 @@ def main():
     else:
         print("Please provide either --list to view known faces or both --name and --image to add a new face.")
         print("\nExample usage:")
-        print("  Add a face: python add_face.py --name \"John Doe\" --image path/to/face.jpg")
-        print("  List faces: python add_face.py --list")
+        print("  Add a face: python src/core/add_face.py --name \"John Doe\" --image path/to/face.jpg")
+        print("  List faces: python src/core/add_face.py --list")
         print("\nImage Guidelines:")
         print("1. Face should be clearly visible and centered")
         print("2. Good lighting (not too dark or bright)")
