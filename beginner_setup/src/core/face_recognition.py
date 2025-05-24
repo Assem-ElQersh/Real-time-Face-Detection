@@ -5,43 +5,70 @@ import pickle
 from datetime import datetime
 import sys
 import dlib
+import face_recognition
 
 # Add the project root directory to Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(project_root)
 
 class FaceRecognitionSystem:
     def __init__(self):
         self.known_faces = []
         self.known_names = []
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        self.predictor = dlib.shape_predictor(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'models', 'shape_predictor_68_face_landmarks.dat'))
+        
+        # Fix the path to the shape predictor model
+        model_path = os.path.join(project_root, 'models', 'shape_predictor_68_face_landmarks.dat')
+        if not os.path.exists(model_path):
+            print(f"Error: Model file not found at {model_path}")
+            print("Please download the model file from:")
+            print("http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2")
+            print("Extract it and place it in the 'models' directory")
+            sys.exit(1)
+            
+        self.predictor = dlib.shape_predictor(model_path)
+        
+        # Ensure data directory exists
+        self.data_dir = os.path.join(project_root, 'beginner_setup', 'src', 'data')
+        os.makedirs(self.data_dir, exist_ok=True)
+        
+        # Ensure known_faces directory exists
+        self.known_faces_dir = os.path.join(project_root, 'beginner_setup', 'known_faces')
+        os.makedirs(self.known_faces_dir, exist_ok=True)
+        
+        self.db_path = os.path.join(self.data_dir, 'known_faces.pkl')
         self.load_known_faces()
 
     def load_known_faces(self):
         """Load known faces from the database"""
-        db_path = os.path.join('src', 'data', 'known_faces.pkl')
-        if os.path.exists(db_path):
-            with open(db_path, 'rb') as f:
+        if os.path.exists(self.db_path):
+            with open(self.db_path, 'rb') as f:
                 data = pickle.load(f)
                 self.known_faces = data['faces']
                 self.known_names = data['names']
             print(f"Loaded {len(self.known_names)} known faces")
 
     def compare_faces(self, face1, face2):
-        """Compare two face images using template matching"""
-        # Resize faces to same size
-        face1 = cv2.resize(face1, (100, 100))
-        face2 = cv2.resize(face2, (100, 100))
-        
-        # Convert to grayscale
-        face1_gray = cv2.cvtColor(face1, cv2.COLOR_BGR2GRAY)
-        face2_gray = cv2.cvtColor(face2, cv2.COLOR_BGR2GRAY)
-        
-        # Calculate similarity using template matching
-        result = cv2.matchTemplate(face1_gray, face2_gray, cv2.TM_CCOEFF_NORMED)
-        similarity = np.max(result)
-        
-        return similarity > 0.6  # Threshold for face matching
+        """Compare two face images and return confidence score"""
+        try:
+            # Convert BGR to RGB (face_recognition uses RGB)
+            face1_rgb = cv2.cvtColor(face1, cv2.COLOR_BGR2RGB)
+            face2_rgb = cv2.cvtColor(face2, cv2.COLOR_BGR2RGB)
+            
+            # Get face encodings
+            face1_encoding = face_recognition.face_encodings(face1_rgb)[0]
+            face2_encoding = face_recognition.face_encodings(face2_rgb)[0]
+            
+            # Calculate face distance (lower is more similar)
+            face_distance = face_recognition.face_distance([face1_encoding], face2_encoding)[0]
+            
+            # Convert distance to confidence score (0-100%)
+            confidence = (1 - face_distance) * 100
+            
+            return confidence > 60, confidence  # Return both match result and confidence score
+        except Exception as e:
+            print(f"Error in face comparison: {str(e)}")
+            return False, 0.0
 
     def process_frame(self, frame):
         """Process a single frame for face detection and recognition"""
@@ -63,18 +90,21 @@ class FaceRecognitionSystem:
             
             # Try to recognize the face
             name = "Unknown"
+            confidence = 0.0
             for known_face, known_name in zip(self.known_faces, self.known_names):
-                if self.compare_faces(face_roi, known_face):
+                is_match, conf = self.compare_faces(face_roi, known_face)
+                if is_match and conf > confidence:
                     name = known_name
-                    break
+                    confidence = conf
             
             # Draw rectangle around face
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
             
-            # Draw name label
+            # Draw name label with confidence
+            label = f"{name} ({confidence:.1f}%)"
             cv2.rectangle(frame, (x, y-35), (x+w, y), (0, 255, 0), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(frame, name, (x + 6, y - 6), font, 0.6, (255, 255, 255), 1)
+            cv2.putText(frame, label, (x + 6, y - 6), font, 0.6, (255, 255, 255), 1)
         
         return frame
 
@@ -153,7 +183,7 @@ class FaceRecognitionSystem:
             # Create directory for this person
             safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '-', '_')).strip()
             safe_name = safe_name.replace(' ', '_')
-            person_dir = os.path.join('known_faces', safe_name)
+            person_dir = os.path.join(self.known_faces_dir, safe_name)
             
             if not os.path.exists(person_dir):
                 os.makedirs(person_dir)
@@ -173,8 +203,7 @@ class FaceRecognitionSystem:
                 'faces': self.known_faces,
                 'names': self.known_names
             }
-            db_path = os.path.join('src', 'data', 'known_faces.pkl')
-            with open(db_path, 'wb') as f:
+            with open(self.db_path, 'wb') as f:
                 pickle.dump(data, f)
             
             return True

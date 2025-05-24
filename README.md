@@ -8,36 +8,38 @@ This project provides two different implementations of real-time face detection 
 
 ```
 Real-time-Face-Detection/
-├── models/                     # Shared model files directory
+├── models/                       # Shared model files directory
 │   └── shape_predictor_68_face_landmarks.dat
-├── beginner_setup/            # Beginner-friendly implementation
-│   ├── src/                   # Source code
-│   │   ├── core/             # Core functionality
-│   │   ├── data/             # Data storage
-│   │   └── utils/            # Utility functions
-│   ├── known_faces/          # Face image storage
-│   ├── requirements.txt      # Dependencies
-│   └── README.md            # Setup instructions
-├── intermediate_setup/        # Advanced implementation
-│   ├── src/                  # Source code
-│   │   ├── detection/        # Face detection
-│   │   ├── alignment/        # Face alignment
-│   │   ├── recognition/      # Feature extraction
-│   │   ├── data/            # Database management
-│   │   └── utils/           # Utility functions
-│   ├── tests/               # Test files
-│   ├── docs/                # Documentation
-│   ├── data/                # Data storage
-│   ├── models/              # Model files
-│   ├── demo.py             # Demo application
-│   ├── download_model.py   # Model downloader
-│   ├── face_database.db    # SQLite database
-│   ├── requirements.txt    # Dependencies
-│   └── README.md          # Setup instructions
-├── DOCUMENTATION.md          # Detailed project documentation
-├── TECHNIQUES_COMPARISON.md  # Technical comparison
-├── project_proposal.tex     # Project proposal
-└── LICENSE                  # Project license
+├── beginner_setup/               # Beginner-friendly implementation
+│   ├── src/                      # Source code
+│   │   ├── core/                 # Core functionality
+│   │   │     ├── known_faces/    # Face image storage
+│   │   │     ├── add_face.py          
+│   │   │     └── face_recognition.py 
+│   │   ├── data/               # Data storage
+│   │   └── utils/              # Utility functions
+│   ├── requirements.txt        # Dependencies
+│   └── README.md               # Setup instructions
+├── intermediate_setup/         # Advanced implementation
+│   ├── src/                    # Source code
+│   │   ├── detection/          # Face detection
+│   │   ├── alignment/          # Face alignment
+│   │   ├── recognition/        # Feature extraction
+│   │   ├── data/               # Database management
+│   │   └── utils/              # Utility functions
+│   ├── tests/                  # Test files
+│   ├── docs/                   # Documentation
+│   ├── data/                   # Data storage
+│   ├── models/                 # Model files
+│   ├── demo.py                 # Demo application
+│   ├── download_model.py       # Model downloader
+│   ├── face_database.db        # SQLite database
+│   ├── requirements.txt        # Dependencies
+│   └── README.md               # Setup instructions
+├── DOCUMENTATION.md            # Detailed project documentation
+├── TECHNIQUES_COMPARISON.md    # Technical comparison
+├── project_proposal.tex        # Project proposal
+└── LICENSE                     # Project license
 ```
 
 ## Quick Start
